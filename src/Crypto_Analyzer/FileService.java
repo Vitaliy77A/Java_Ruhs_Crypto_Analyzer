@@ -7,13 +7,11 @@ import java.nio.file.Path;
 public class FileService {
     public String readFile(String filePath) {
         try {
-
             return
                     Files.readString(Path.of(filePath));
         } catch (IOException e) {
             System.out.println("Не вдалося прочитати файл: " + filePath);
             e.printStackTrace();
-
             return "";
         }
     }
@@ -30,13 +28,11 @@ public class FileService {
     public String getNewFilePath(String originalPath, String tag) {
         int dotIndex = originalPath.lastIndexOf('.');
         if (dotIndex == -1) {
-
             return originalPath + tag;
 
         } else {
             String name = originalPath.substring(0, dotIndex);
             String extepsion = originalPath.substring(dotIndex);
-
             return name + tag + extepsion;
         }
     }
