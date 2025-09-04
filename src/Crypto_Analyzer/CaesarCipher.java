@@ -29,7 +29,7 @@ public class CaesarCipher {
         if (isTextPlausible(decryptedByFrequency)) {
             return decryptedByFrequency;
         } else {
-            System.out.println("Частотный анализ дал сомнительный результат -> полный перебор...");
+            System.out.println("Частковий аналіз дав сумнівний результат -> повний перебір ключів...");
             return findBestMatchByBruteForce(encryptedText, alphabet);
         }
     }
@@ -73,7 +73,7 @@ public class CaesarCipher {
         int alphLen = alphabet.length();
         int idxTextMost = indexInAlphabet(alphabet, mostFrequentInText);
         if (idxTextMost == -1) {
-            System.out.println("Warning: частая буква из текста не найдена в алфавите: " + mostFrequentInText);
+            System.out.println("Увага: часта буква у алфавіті не знайдена: " + mostFrequentInText);
             return encryptedText;
         }
 
@@ -163,7 +163,7 @@ public class CaesarCipher {
 
     private boolean containsStopWord(String text) {
         if (text == null) return false;
-        String lower = text.toLowerCase(); // Пробелы по краям больше не нужны
+        String lower = text.toLowerCase();
 
         for (String stopWord : STOP_WORDS) {
             if (lower.contains(stopWord)) {
