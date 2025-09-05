@@ -139,6 +139,7 @@ public class CaesarCipher {
             if (entry.getValue() > maxCount) {
                 maxCount = entry.getValue();
                 mostFrequent = entry.getKey();
+
             }
         }
         return mostFrequent;
