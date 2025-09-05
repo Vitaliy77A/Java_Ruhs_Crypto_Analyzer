@@ -1,14 +1,16 @@
 package Crypto_Analyzer;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 
 public class FileService {
+
     public String readFile(String filePath) {
         try {
-            return
-                    Files.readString(Path.of(filePath));
+            return Files.readString(Paths.get(filePath), StandardCharsets.UTF_8);
         } catch (IOException e) {
             System.out.println("Не вдалося прочитати файл: " + filePath);
             e.printStackTrace();
@@ -18,7 +20,12 @@ public class FileService {
 
     public void writeFile(String filePath, String content) {
         try {
-            Files.writeString(Path.of(filePath), content);
+            Path outPath = Paths.get(filePath);
+            Path parent = outPath.getParent();
+            if (parent != null && !Files.exists(parent)) {
+                Files.createDirectories(parent);
+            }
+            Files.writeString(outPath, content, StandardCharsets.UTF_8);
         } catch (IOException e) {
             System.out.println("Не вдалося записати файл: " + filePath);
             e.printStackTrace();
@@ -29,11 +36,10 @@ public class FileService {
         int dotIndex = originalPath.lastIndexOf('.');
         if (dotIndex == -1) {
             return originalPath + tag;
-
         } else {
             String name = originalPath.substring(0, dotIndex);
-            String extepsion = originalPath.substring(dotIndex);
-            return name + tag + extepsion;
+            String extension = originalPath.substring(dotIndex);
+            return name + tag + extension;
         }
     }
 }

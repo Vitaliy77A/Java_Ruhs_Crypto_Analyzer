@@ -1,6 +1,4 @@
-import Crypto_Analyzer.CLI;
-import Crypto_Analyzer.CaesarCipher;
-import Crypto_Analyzer.FileService;
+package Crypto_Analyzer;
 
 public class Runner {
     public static void main(String[] args) {
@@ -8,4 +6,3 @@ public class Runner {
         cli.run();
     }
 }
-
