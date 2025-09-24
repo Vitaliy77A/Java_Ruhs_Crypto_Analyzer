@@ -3,6 +3,7 @@ package Crypto_Analyzer;
 import java.util.Scanner;
 
 public class CLI {
+
     private static final String ENCRYPT = "1";
     private static final String DECRYPT = "2";
     private static final String BRUTE_FORCE = "3";
@@ -22,16 +23,16 @@ public class CLI {
             System.out.println("Ваш вибір: ");
             String choice = scanner.nextLine();
             switch (choice) {
-                case ENCRYPT :
+                case ENCRYPT:
                     performEncrypt();
                     break;
-                case DECRYPT :
+                case DECRYPT:
                     performDecrypt();
                     break;
-                case BRUTE_FORCE :
+                case BRUTE_FORCE:
                     performBruteForce();
                     break;
-                case EXIT :
+                case EXIT:
                     System.out.println("Дякую за використання! До побачення.");
                     return;
                 default:
@@ -42,44 +43,15 @@ public class CLI {
     }
 
     private void performEncrypt() {
-        System.out.println("Введить шлях до файлу для шифрування: ");
-        String filePath = scanner.nextLine();
-        System.out.println("Введіть ключ(ціле число): ");
-        try {
-            int key = Integer.parseInt(scanner.nextLine());
-            String content = fileService.readFile(filePath);
-            String alphabet = caesarCipher.detectAlphabet(content);
-            String encryptedText = caesarCipher.encrypt(content, key, alphabet);
-            String outputFileName = getOutputFileName(filePath, "[ENCRYPTED]");
-            fileService.writeFile(outputFileName, encryptedText);
-            System.out.println("Шифрування успішно завершено!");
-            System.out.println("Результат збережено у файл: " + outputFileName);
-        } catch (NumberFormatException e) {
-            System.out.println("Помилка ключ має бути цілим числом.");
-        } catch (Exception e) {
-            System.out.println("Сталася помилка при роботі з файлом: " + e.getMessage());
-        }
+
+        performOperationByKey("encrypt");
 
     }
+
     private void performDecrypt() {
-        System.out.println("Введить шлях до файлу для розшифрування:");
-        String filePath = scanner.nextLine();
-        System.out.println("Введіть ключ(ціле число): ");
-        try {
-            int key = Integer.parseInt(scanner.nextLine());
-            String content = fileService.readFile(filePath);
-            String alphabet = caesarCipher.detectAlphabet(content);
-            String decryptedText = caesarCipher.decrypt(content, key, alphabet);
-            String outputFileName = getOutputFileName(filePath, "[DECRYPTED]");
-            fileService.writeFile(outputFileName, decryptedText);
-            System.out.println("Розшифрування успішно завершено!");
-            System.out.println("Результат збережено у файл: " + outputFileName);
-        } catch (NumberFormatException e) {
-            System.out.println("Помилка ключ має бути цілим числом.");
-        } catch (Exception e) {
-            System.out.println("Сталася помилка при роботі з файлом: " + e.getMessage());
-        }
+        performOperationByKey("decrypt");
     }
+
     private void performBruteForce() {
         System.out.println("Введить шлях до файлу для взлому: ");
         String filePath = scanner.nextLine();
@@ -87,7 +59,7 @@ public class CLI {
             String content = fileService.readFile(filePath);
             String alphabet = caesarCipher.detectAlphabet(content);
             String bruteForcedText = caesarCipher.bruteForce(content, alphabet);
-            String outputFileName = getOutputFileName(filePath, "[BRUTE_FORCED]");
+            String outputFileName = fileService.getNewFilePath(filePath, "[BRUTE_FORCED]");
             fileService.writeFile(outputFileName, bruteForcedText);
             System.out.println("Взлом завершено!");
             System.out.println("Результат збережено у файл: " + outputFileName);
@@ -97,15 +69,41 @@ public class CLI {
 
     }
 
-    private static String getOutputFileName(String originalPath, String tag) {
-        int dotIndex = originalPath.lastIndexOf('.');
-        if (dotIndex == -1) {
-            return originalPath + tag;
-
+    private void performOperationByKey(String operationType) {
+        String operationName;
+        String fileTag;
+        if (operationType.equals("encrypt")) {
+            operationName = "Шифрування";
+            fileTag = "[ENCRYPTED]";
         } else {
-            String name = originalPath.substring(0, dotIndex);
-            String extension = originalPath.substring(dotIndex);
-            return name + tag + extension;
+            operationName = "Розшифрування";
+            fileTag = "[DECRYPTED]";
+        }
+        System.out.println("Введіть шлях до файлу для " + operationName + ":");
+        String filePath = scanner.nextLine();
+        System.out.println("Введіть ключ(ціле число): ");
+        try {
+            int key = Integer.parseInt(scanner.nextLine());
+            String content = fileService.readFile(filePath);
+            String alphabet = caesarCipher.detectAlphabet(content);
+            String resultText;
+            if (operationType.equals("encrypt")) {
+                resultText = caesarCipher.encrypt(content, key, alphabet);
+            } else {
+                resultText = caesarCipher.decrypt(content, key, alphabet);
+            }
+
+            String outputFileName = fileService.getNewFilePath(filePath, fileTag);
+            fileService.writeFile(outputFileName, resultText);
+            String capitalizedOperation = operationName.substring(0, 1).toUpperCase() + operationName.substring(1);
+            System.out.println(capitalizedOperation + " успішно завершено!");
+            System.out.println("Результат збережено у файл: " + outputFileName);
+
+        } catch (NumberFormatException e) {
+            System.out.println("Помилка: ключ має бути цілим числом.");
+        } catch (Exception e) {
+            System.out.println("Сталася помилка при роботі з файлом: " + e.getMessage());
         }
     }
+
 }
