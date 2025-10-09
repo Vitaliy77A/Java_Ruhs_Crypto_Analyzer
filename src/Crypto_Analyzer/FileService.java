@@ -34,12 +34,24 @@ public class FileService {
 
     public String getNewFilePath(String originalPath, String tag) {
         int dotIndex = originalPath.lastIndexOf('.');
-        if (dotIndex == -1) {
-            return originalPath + tag;
+        String nameWithoutExt;
+        String extension;
+        if (dotIndex != -1) {
+            nameWithoutExt = originalPath.substring(0, dotIndex);
+            extension = originalPath.substring(dotIndex);
         } else {
-            String name = originalPath.substring(0, dotIndex);
-            String extension = originalPath.substring(dotIndex);
-            return name + tag + extension;
+            nameWithoutExt = originalPath;
+            extension = "";
         }
+
+        int lastBracketIndex = nameWithoutExt.lastIndexOf('[');
+        String baseName;
+        if (lastBracketIndex != -1) {
+            baseName = nameWithoutExt.substring(0, lastBracketIndex);
+        } else {
+            baseName = nameWithoutExt;
+        }
+
+        return baseName + tag + extension;
     }
 }
