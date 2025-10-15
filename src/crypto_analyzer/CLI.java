@@ -1,13 +1,19 @@
-package Crypto_Analyzer;
+package crypto_analyzer;
 
+import java.io.IOException;
+import java.util.Scanner;
+
+import static crypto_analyzer.OperationType.*;
+
+// CLI.java
 import java.util.Scanner;
 
 public class CLI {
+    private static final String ENCRYPT_OPTION = "1";
+    private static final String DECRYPT_OPTION = "2";
+    private static final String BRUTE_FORCE_OPTION = "3";
+    private static final String EXIT_OPTION = "0";
 
-    private static final String ENCRYPT = "1";
-    private static final String DECRYPT = "2";
-    private static final String BRUTE_FORCE = "3";
-    private static final String EXIT = "0";
 
     private final CaesarCipher caesarCipher = new CaesarCipher();
     private final FileService fileService = new FileService();
@@ -20,45 +26,36 @@ public class CLI {
             System.out.println("2. Розшифрувати файл ключем.");
             System.out.println("3. Підібрати ключ.");
             System.out.println("0. Вихід з програми.");
-            System.out.println("Ваш вибір: ");
-            String choice = scanner.nextLine();
+            System.out.print("Ваш вибір: ");
+
+            String choice = scanner.nextLine().trim();
+
             switch (choice) {
-                case ENCRYPT:
-                    performEncrypt();
+                case ENCRYPT_OPTION:
+                    performOperationByKey(false);
                     break;
-                case DECRYPT:
-                    performDecrypt();
+                case DECRYPT_OPTION:
+                    performOperationByKey(true);
                     break;
-                case BRUTE_FORCE:
+                case BRUTE_FORCE_OPTION:
                     performBruteForce();
                     break;
-                case EXIT:
+                case EXIT_OPTION:
                     System.out.println("Дякую за використання! До побачення.");
                     return;
                 default:
                     System.out.println("Не вірний вибір. Спробуйте ще раз.");
             }
         }
-
-    }
-
-    private void performEncrypt() {
-
-        performOperationByKey("encrypt");
-
-    }
-
-    private void performDecrypt() {
-        performOperationByKey("decrypt");
     }
 
     private void performBruteForce() {
-        System.out.println("Введить шлях до файлу для взлому: ");
+        System.out.print("Введіть шлях до файлу для взлому: ");
         String filePath = scanner.nextLine();
         try {
             String content = fileService.readFile(filePath);
             String alphabet = caesarCipher.detectAlphabet(content);
-            String bruteForcedText = caesarCipher.bruteForce(content, alphabet);
+            String bruteForcedText = caesarCipher.bruteForce(content);
             String outputFileName = fileService.getNewFilePath(filePath, "[BRUTE_FORCED]");
             fileService.writeFile(outputFileName, bruteForcedText);
             System.out.println("Взлом завершено!");
@@ -66,44 +63,37 @@ public class CLI {
         } catch (Exception e) {
             System.out.println("Сталася помилка при роботі з файлом: " + e.getMessage());
         }
-
     }
 
-    private void performOperationByKey(String operationType) {
-        String operationName;
-        String fileTag;
-        if (operationType.equals("encrypt")) {
-            operationName = "Шифрування";
-            fileTag = "[ENCRYPTED]";
-        } else {
-            operationName = "Розшифрування";
-            fileTag = "[DECRYPTED]";
-        }
-        System.out.println("Введіть шлях до файлу для " + operationName + ":");
+    private void performOperationByKey(boolean shiftMode) {
+
+        String operationName = shiftMode ? "Розшифрування" : "Шифрування";
+        String fileTag = shiftMode  ? "[DECRYPTED]" : "[ENCRYPTED]";
+
+        System.out.print("Введіть шлях до файлу для " + operationName + ": ");
         String filePath = scanner.nextLine();
-        System.out.println("Введіть ключ(ціле число): ");
+
+        System.out.print("Введіть ключ (ціле число): ");
+        String keyLine = scanner.nextLine().trim();
+
         try {
-            int key = Integer.parseInt(scanner.nextLine());
+            int key = Integer.parseInt(keyLine);
+
             String content = fileService.readFile(filePath);
             String alphabet = caesarCipher.detectAlphabet(content);
-            String resultText;
-            if (operationType.equals("encrypt")) {
-                resultText = caesarCipher.encrypt(content, key, alphabet);
-            } else {
-                resultText = caesarCipher.decrypt(content, key, alphabet);
-            }
+
+            String resultText = caesarCipher.shift(content, key, shiftMode);
 
             String outputFileName = fileService.getNewFilePath(filePath, fileTag);
             fileService.writeFile(outputFileName, resultText);
-            String capitalizedOperation = operationName.substring(0, 1).toUpperCase() + operationName.substring(1);
-            System.out.println(capitalizedOperation + " успішно завершено!");
+            System.out.println(shiftMode + " успішно завершено!");
             System.out.println("Результат збережено у файл: " + outputFileName);
 
         } catch (NumberFormatException e) {
             System.out.println("Помилка: ключ має бути цілим числом.");
-        } catch (Exception e) {
+        } catch (IOException e) {
             System.out.println("Сталася помилка при роботі з файлом: " + e.getMessage());
         }
     }
-
 }
+

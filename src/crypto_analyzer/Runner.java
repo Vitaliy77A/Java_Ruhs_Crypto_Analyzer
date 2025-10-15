@@ -1,4 +1,4 @@
-package Crypto_Analyzer;
+package crypto_analyzer;
 
 public class Runner {
     public static void main(String[] args) {

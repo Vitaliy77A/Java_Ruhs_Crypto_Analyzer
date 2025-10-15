@@ -1,4 +1,4 @@
-package Crypto_Analyzer;
+package crypto_analyzer;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -8,28 +8,17 @@ import java.nio.file.Paths;
 
 public class FileService {
 
-    public String readFile(String filePath) {
-        try {
-            return Files.readString(Paths.get(filePath), StandardCharsets.UTF_8);
-        } catch (IOException e) {
-            System.out.println("Не вдалося прочитати файл: " + filePath);
-            e.printStackTrace();
-            return "";
-        }
+    public String readFile(String filePath) throws IOException {
+        return Files.readString(Paths.get(filePath), StandardCharsets.UTF_8);
     }
 
-    public void writeFile(String filePath, String content) {
-        try {
-            Path outPath = Paths.get(filePath);
-            Path parent = outPath.getParent();
-            if (parent != null && !Files.exists(parent)) {
-                Files.createDirectories(parent);
-            }
-            Files.writeString(outPath, content, StandardCharsets.UTF_8);
-        } catch (IOException e) {
-            System.out.println("Не вдалося записати файл: " + filePath);
-            e.printStackTrace();
+    public void writeFile(String filePath, String content) throws IOException {
+        Path outPath = Paths.get(filePath);
+        Path parent = outPath.getParent();
+        if (parent != null && !Files.exists(parent)) {
+            Files.createDirectories(parent);
         }
+        Files.writeString(outPath, content, StandardCharsets.UTF_8);
     }
 
     public String getNewFilePath(String originalPath, String tag) {
