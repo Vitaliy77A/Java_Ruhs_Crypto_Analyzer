@@ -9,11 +9,6 @@ import static crypto_analyzer.OperationType.*;
 import java.util.Scanner;
 
 public class CLI {
-    private static final String ENCRYPT_OPTION = "1";
-    private static final String DECRYPT_OPTION = "2";
-    private static final String BRUTE_FORCE_OPTION = "3";
-    private static final String EXIT_OPTION = "0";
-
 
     private final CaesarCipher caesarCipher = new CaesarCipher();
     private final FileService fileService = new FileService();
@@ -30,24 +25,46 @@ public class CLI {
 
             String choice = scanner.nextLine().trim();
 
-            switch (choice) {
-                case ENCRYPT_OPTION:
+            OperationType operation = getOperationByChoice(choice);
+
+            if (operation == null) {
+                System.out.println("Не вірний вибір. Спробуйте ще раз.");
+                continue;
+            }
+
+            switch (operation) {
+                case ENCRYPT:
                     performOperationByKey(false);
                     break;
-                case DECRYPT_OPTION:
+                case DECRYPT:
                     performOperationByKey(true);
                     break;
-                case BRUTE_FORCE_OPTION:
+                case BRUTE_FORCE:
                     performBruteForce();
                     break;
-                case EXIT_OPTION:
+                case EXIT:
                     System.out.println("Дякую за використання! До побачення.");
                     return;
-                default:
-                    System.out.println("Не вірний вибір. Спробуйте ще раз.");
             }
+
         }
     }
+
+    private OperationType getOperationByChoice(String choice) {
+        switch (choice) {
+            case "1":
+                return ENCRYPT;
+            case "2":
+                return DECRYPT;
+            case "3":
+                return BRUTE_FORCE;
+            case "0":
+                return EXIT;
+            default:
+                return null;
+        }
+    }
+
 
     private void performBruteForce() {
         System.out.print("Введіть шлях до файлу для взлому: ");
