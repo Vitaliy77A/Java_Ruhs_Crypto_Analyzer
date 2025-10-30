@@ -33,38 +33,30 @@ public class CLI {
             }
 
             switch (operation) {
-                case ENCRYPT:
-                    performOperationByKey(false);
-                    break;
-                case DECRYPT:
-                    performOperationByKey(true);
-                    break;
-                case BRUTE_FORCE:
-                    performBruteForce();
-                    break;
-                case EXIT:
+                case ENCRYPT -> performOperationByKey(false);
+                case DECRYPT -> performOperationByKey(true);
+                case BRUTE_FORCE -> performBruteForce();
+                case EXIT -> {
                     System.out.println("Дякую за використання! До побачення.");
                     return;
+                }
             }
 
         }
     }
 
     private OperationType getOperationByChoice(String choice) {
-        switch (choice) {
-            case "1":
-                return ENCRYPT;
-            case "2":
-                return DECRYPT;
-            case "3":
-                return BRUTE_FORCE;
-            case "0":
-                return EXIT;
-            default:
-                return null;
-        }
+      return switch (choice) {
+            case "1" -> ENCRYPT;
+            case "2" -> DECRYPT;
+            case "3" -> BRUTE_FORCE;
+            case "0" -> EXIT;
+            default -> {
+                System.out.println("Не вірний вибір " + choice );
+               yield  null;
+            }
+        };
     }
-
 
     private void performBruteForce() {
         System.out.print("Введіть шлях до файлу для взлому: ");
@@ -85,7 +77,7 @@ public class CLI {
     private void performOperationByKey(boolean shiftMode) {
 
         String operationName = shiftMode ? "Розшифрування" : "Шифрування";
-        String fileTag = shiftMode  ? "[DECRYPTED]" : "[ENCRYPTED]";
+        String fileTag = shiftMode ? "[DECRYPTED]" : "[ENCRYPTED]";
 
         System.out.print("Введіть шлях до файлу для " + operationName + ": ");
         String filePath = scanner.nextLine();
@@ -103,7 +95,7 @@ public class CLI {
 
             String outputFileName = fileService.getNewFilePath(filePath, fileTag);
             fileService.writeFile(outputFileName, resultText);
-            System.out.println(shiftMode + " успішно завершено!");
+            System.out.println(operationName + " успішно завершено!");
             System.out.println("Результат збережено у файл: " + outputFileName);
 
         } catch (NumberFormatException e) {
